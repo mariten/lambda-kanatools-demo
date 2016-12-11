@@ -13,11 +13,27 @@ description = 'Demo for running Kana Tools for Java on AWS Lambda'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+// Allow mechanism for specifying some dependencies which need to be included inside JAR file
+configurations {
+    libsToCopyInsideJar
+}
+
 dependencies {
+    // For compilation / runtime
     compile 'com.mariten:kanatools:1.3.0'
     compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
     compile 'com.amazonaws:aws-lambda-java-events:1.3.0'
     compile 'com.amazonaws:aws-lambda-java-log4j:1.0.0'
+
+    // Also need to be included as-is inside JAR
+    libsToCopyInsideJar 'com.mariten:kanatools:1.3.0'
+}
+
+jar {
+    // Include libraries inside JAR file which must be present to run
+    from {
+        configurations.libsToCopyInsideJar.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 task wrapper(type: Wrapper) {
