@@ -1,31 +1,46 @@
 package com.mariten.lambda;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.BufferedReader;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.mariten.kanatools.KanaConverter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.json.simple.parser.JSONParser;
 
 public class ConvertKanaDemo
 {
-    public String handleLambdaRequest(Object input, Context lambda_context)
+    public void handleLambdaRequest(InputStream     api_gateway_request,
+                                    OutputStream    api_gateway_response,
+                                    Context         lambda_context
+    )
+    throws IOException
     {
         LambdaLogger logger = lambda_context.getLogger();
         logger.log("Starting ConvertKanaDemo\n");
 
-        HashMap<String, String> input_params = (HashMap<String, String>) input;
-        if (input_params.containsKey("input_str")) {
-            int conv_op_flags = 0;
-            conv_op_flags |= KanaConverter.OP_HAN_KATA_TO_ZEN_KATA;
-            conv_op_flags |= KanaConverter.OP_ZEN_ASCII_TO_HAN_ASCII;
-
-            String input_str = input_params.get("input_str");
-            logger.log("input_str: '" + input_str + "'\n");
-            String output_str = KanaConverter.convertKana(input_str, conv_op_flags);
-            logger.log("output_str: '" + output_str + "'\n");
-            return "{'output_str':'" + output_str + "'}";
-        } else {
-            return "{'success':false}";
+        BufferedReader request_reader = new BufferedReader(new InputStreamReader(api_gateway_request));
+        JSONParser json_parser = new JSONParser();
+        JSONObject request_json;
+        try {
+            request_json = (JSONObject) json_parser.parse(request_reader);
+            logger.log("Request JSON: " + request_json.toJSONString());
+        } catch (ParseException parse_ex) {
+            logger.log("Error while parsing request JSON: " + parse_ex.getMessage());
         }
+
+        JSONObject response_json = new JSONObject();
+        response_json.put("statusCode", "200");
+        response_json.put("body", "OK");
+
+        OutputStreamWriter stream_writer = new OutputStreamWriter(api_gateway_response, "UTF-8");
+        stream_writer.write(response_json.toJSONString());
+        stream_writer.close();
     }
 }
