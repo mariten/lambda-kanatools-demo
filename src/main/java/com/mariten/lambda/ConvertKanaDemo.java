@@ -3,7 +3,6 @@ package com.mariten.lambda;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -25,14 +24,19 @@ public class ConvertKanaDemo
 
         // Parse request JSON structure received from API Gateway
         JsonObject request_json = ApiGatewayHelpers.parseRequest(api_gateway_request, logger);
-        logger.log("Request JSON: " + request_json.toJson());
+        if (request_json == null) {
+            ApiGatewayHelpers.respondError(api_gateway_response, 500, "Failure parsing request");
+            return;
+        }
 
+
+        // Produce output JSON for response
         JsonObject response_json = new JsonObject();
-        response_json.put("statusCode", "200");
-        response_json.put("body", "OK");
+        response_json.put("success", true);
+        response_json.put("converted_str", "blargh");
 
-        OutputStreamWriter stream_writer = new OutputStreamWriter(api_gateway_response, "UTF-8");
-        stream_writer.write(response_json.toJson());
-        stream_writer.close();
+        // Send response and finish
+        ApiGatewayHelpers.respondSuccess(api_gateway_response, response_json);
+        logger.log("Finished ConvertKanaDemo\n");
     }
 }
