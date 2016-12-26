@@ -38,6 +38,11 @@ public class ConvertKanaDemo
         if (input_str == null) {
             param_errors.add("Query param [input_str] is required");
         }
+        //// "conv_ops"
+        int conv_ops = ApiGatewayHelpers.getIntegerQueryParam(request_json, "conv_ops", 0);
+        if (conv_ops < 1) {
+            param_errors.add("Query param [conv_ops] is required, must be positive integer");
+        }
 
         // If any errors occurred, stop and return 400
         if (param_errors.size() > 0) {

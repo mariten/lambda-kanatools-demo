@@ -94,4 +94,24 @@ public class ApiGatewayHelpers
 
         return query_params.getStringOrDefault(param_name, default_value);
     }
+
+
+    public static int getIntegerQueryParam(JsonObject request_json, String param_name, int default_value)
+    {
+        JsonObject query_params = request_json.getMapOrDefault("queryStringParameters", null);
+        if (query_params == null) {
+            return default_value;
+        }
+
+        String raw_value = query_params.getStringOrDefault(param_name, null);
+        if (raw_value == null) {
+            return default_value;
+        }
+
+        try {
+            return Integer.parseInt(raw_value);
+        } catch (NumberFormatException num_ex) {
+            return default_value;
+        }
+    }
 }
