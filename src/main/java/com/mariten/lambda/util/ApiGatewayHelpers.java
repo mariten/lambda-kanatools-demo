@@ -83,4 +83,15 @@ public class ApiGatewayHelpers
         stream_writer.write(full_response.toJson());
         stream_writer.close();
     }
+
+
+    public static String getStringQueryParam(JsonObject request_json, String param_name, String default_value)
+    {
+        JsonObject query_params = request_json.getMapOrDefault("queryStringParameters", null);
+        if (query_params == null) {
+            return default_value;
+        }
+
+        return query_params.getStringOrDefault(param_name, default_value);
+    }
 }

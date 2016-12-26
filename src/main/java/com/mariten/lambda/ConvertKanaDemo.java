@@ -3,6 +3,8 @@ package com.mariten.lambda;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -29,11 +31,24 @@ public class ConvertKanaDemo
             return;
         }
 
+        // Check for required params
+        List<String> param_errors = new ArrayList<String>();
+        //// "input_str"
+        String input_str = ApiGatewayHelpers.getStringQueryParam(request_json, "input_str", null);
+        if (input_str == null) {
+            param_errors.add("Query param [input_str] is required");
+        }
+
+        // If any errors occurred, stop and return 400
+        if (param_errors.size() > 0) {
+            ApiGatewayHelpers.respondError(api_gateway_response, 400, param_errors);
+            return;
+        }
 
         // Produce output JSON for response
         JsonObject response_json = new JsonObject();
         response_json.put("success", true);
-        response_json.put("converted_str", "blargh");
+        response_json.put("converted_str", input_str);
 
         // Send response and finish
         ApiGatewayHelpers.respondSuccess(api_gateway_response, response_json);
