@@ -50,10 +50,13 @@ public class ConvertKanaDemo
             return;
         }
 
+        // Convert string
+        String output_str = KanaConverter.convertKana(input_str, conv_ops);
+
         // Produce output JSON for response
         JsonObject response_json = new JsonObject();
         response_json.put("success", true);
-        response_json.put("converted_str", input_str);
+        response_json.put("converted_str", output_str);
 
         // Send response and finish
         ApiGatewayHelpers.respondSuccess(api_gateway_response, response_json);
