@@ -33,16 +33,18 @@ public class ConvertKanaDemo
 
         // Check for required params
         List<String> param_errors = new ArrayList<String>();
-        //// "input_str"
+        //// Required: "input_str"
         String input_str = ApiGatewayHelpers.getStringQueryParam(request_json, "input_str", null);
         if (input_str == null) {
             param_errors.add("Query param [input_str] is required");
         }
-        //// "conv_ops"
+        //// Required: "conv_ops"
         int conv_ops = ApiGatewayHelpers.getIntegerQueryParam(request_json, "conv_ops", 0);
         if (conv_ops < 1) {
             param_errors.add("Query param [conv_ops] is required, must be positive integer");
         }
+        //// Optional: "ignore_chars"
+        String ignore_chars = ApiGatewayHelpers.getStringQueryParam(request_json, "ignore_chars", "");
 
         // If any errors occurred, stop and return 400
         if (param_errors.size() > 0) {
@@ -51,7 +53,7 @@ public class ConvertKanaDemo
         }
 
         // Convert string
-        String output_str = KanaConverter.convertKana(input_str, conv_ops);
+        String output_str = KanaConverter.convertKana(input_str, conv_ops, ignore_chars);
 
         // Produce output JSON for response
         JsonObject response_json = new JsonObject();
