@@ -23,6 +23,9 @@ public class ConvertKanaDemo
     {
         LambdaLogger logger = lambda_context.getLogger();
         logger.log("Starting ConvertKanaDemo\n");
+        System.out.println("");
+        
+        try{}catch(Exception e){}
 
         // Parse request JSON structure received from API Gateway
         JsonObject request_json = ApiGatewayHelpers.parseRequest(api_gateway_request, logger);
